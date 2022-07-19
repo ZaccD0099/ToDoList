@@ -1,17 +1,17 @@
 import UIKit
+import CoreData
 
 class ToDoListViewController: UITableViewController {
     
     var itemArray = [Item]()
     
-//    let defaults = UserDefaults.standard
-    
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+// UIApplication.shared.delegate as! AppDelegate refers to the appdelegate of the running instance of the app, cannot refer to the class because it hasn't been initialized - that is why AppDelegate.persistentContainer.viewContext doesn't work.
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //        setting naivgation bar color, using this because there is a bug in the GUI - only seen when running app
+        // setting naivgation bar color, using this because there is a bug in the GUI - only seen when running app
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         appearance.backgroundColor = UIColor.systemBlue
@@ -20,18 +20,10 @@ class ToDoListViewController: UITableViewController {
         navigationItem.scrollEdgeAppearance = appearance
         
         
-//        Creating data persistence using the following linking to users sandbox files - this is how to store more data on an application
-        
-        loadData()
-        
-//        Where data is held on user device
-//        print(dataFilePath)
-        
-        
-//        Should only use defaults for small amounts of data - bc they must be loaded when the application is opening, only standard types are accepted.
-//        if let items = defaults.array(forKey: "ToDoListArray") as? [Item]{
-//            itemArray = items
-//        }
+        let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+                                                      
+        print(dataFilePath)
+
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -51,11 +43,9 @@ class ToDoListViewController: UITableViewController {
         
         cell.textLabel?.text = item.name
         
-        //        Ternary Operator ==> value = condition ? value if true : value if false
-        
         cell.accessoryType = item.done ? .checkmark : .none
         
-        print("cell for row at func ran")
+
         
         return cell
     }
@@ -77,23 +67,22 @@ class ToDoListViewController: UITableViewController {
     //MARK: - Add New Items
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        // What will happen when the user clicks on the action
         
         var textField = UITextField()
         
         let alert = UIAlertController(title: "Add New Item", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
-            //            What will happen when the user clicks on the action
             
-            var newItem = Item()
+            let newItem = Item(context: self.context)
             
             newItem.name = textField.text!
+            newItem.done = false
             
             self.itemArray.append(newItem)
             
             self.saveData()
-            
-//            self.defaults.set(self.itemArray, forKey: "ToDoListArray")
             
         }
         
@@ -112,11 +101,9 @@ class ToDoListViewController: UITableViewController {
     
     func saveData() {
         
-        let encoder = PropertyListEncoder()
         
         do {
-            let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+            try context.save()
         } catch {
             print("error encoding: \(error)")
         }
@@ -124,15 +111,17 @@ class ToDoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-    func loadData() {
-        
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            do {
-                itemArray  = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("items decoding failed: \(error)")
-            }
-        }
-    }
+//    func loadData() {
+//
+//        if let data = try? Data(contentsOf: dataFilePath!) {
+//            let decoder = PropertyListDecoder()
+//            do {
+//                itemArray  = try decoder.decode([Item].self, from: data)
+//            } catch {
+//                print("items decoding failed: \(error)")
+//            }
+//        }
+//    }
+    
+    
 }
