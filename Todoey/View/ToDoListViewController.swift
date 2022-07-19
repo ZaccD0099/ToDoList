@@ -19,10 +19,8 @@ class ToDoListViewController: UITableViewController {
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
         
-        
-        let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
                                                       
-        print(dataFilePath)
+        loadData()
 
     }
     
@@ -56,7 +54,11 @@ class ToDoListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+//  DELETE when clicked, must remove from context before itemArray, because using item array to pull the correct item from context
+        context.delete(itemArray[indexPath.row])
+        itemArray.remove(at: indexPath.row)
+        
+//        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
         self.saveData()
         
@@ -99,29 +101,28 @@ class ToDoListViewController: UITableViewController {
     
     //MARK: - Model Manipulation Methods
     
+//    Save data to CoreData context => container -  WRITE
+    
     func saveData() {
-        
-        
         do {
             try context.save()
         } catch {
             print("error encoding: \(error)")
         }
-        
         self.tableView.reloadData()
     }
     
-//    func loadData() {
-//
-//        if let data = try? Data(contentsOf: dataFilePath!) {
-//            let decoder = PropertyListDecoder()
-//            do {
-//                itemArray  = try decoder.decode([Item].self, from: data)
-//            } catch {
-//                print("items decoding failed: \(error)")
-//            }
-//        }
-//    }
+    func loadData() {
+        
+//        this requires a specific type as seen below you must declare the type. (READ)
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        
+        do {
+            itemArray = try context.fetch(request)
+        } catch {
+            print("error fetching request \(error)")
+        }
+    }
     
     
 }
