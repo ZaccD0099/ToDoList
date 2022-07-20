@@ -18,9 +18,8 @@ class ToDoListViewController: UITableViewController {
         appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
-        
-                                                      
-        loadData()
+                                  
+        loadItems()
 
     }
     
@@ -33,7 +32,7 @@ class ToDoListViewController: UITableViewController {
     // Provide a cell object for each row.
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // Fetch a cell of the appropriate type.
-        let cell = tableView.dequeueReusableCell(withIdentifier: K.cellIdentifier, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: K.itemCellIdentifier, for: indexPath)
         
         // Configure the cell’s contents.
         
@@ -42,8 +41,6 @@ class ToDoListViewController: UITableViewController {
         cell.textLabel?.text = item.name
         
         cell.accessoryType = item.done ? .checkmark : .none
-        
-
         
         return cell
     }
@@ -55,15 +52,14 @@ class ToDoListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
 //  DELETE when clicked, must remove from context before itemArray, because using item array to pull the correct item from context
-        context.delete(itemArray[indexPath.row])
-        itemArray.remove(at: indexPath.row)
+//        context.delete(itemArray[indexPath.row])
+//        itemArray.remove(at: indexPath.row)
         
-//        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
-        self.saveData()
+        self.saveItems()
         
         tableView.deselectRow(at: indexPath, animated: true)
-        
     }
     
     //MARK: - Add New Items
@@ -84,8 +80,7 @@ class ToDoListViewController: UITableViewController {
             
             self.itemArray.append(newItem)
             
-            self.saveData()
-            
+            self.saveItems()
         }
         
         alert.addTextField { alertTextField in
@@ -103,7 +98,7 @@ class ToDoListViewController: UITableViewController {
     
 //    Save data to CoreData context => container -  WRITE
     
-    func saveData() {
+    func saveItems() {
         do {
             try context.save()
         } catch {
@@ -112,15 +107,55 @@ class ToDoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-    func loadData() {
+//    provides defualt Item.fetchRequest loading everything available
+    
+    func loadItems(with request : NSFetchRequest<Item> = Item.fetchRequest()) {
         
 //        this requires a specific type as seen below you must declare the type. (READ)
-        let request : NSFetchRequest<Item> = Item.fetchRequest()
+//        let request : NSFetchRequest<Item> = Item.fetchRequest()
         
         do {
             itemArray = try context.fetch(request)
         } catch {
             print("error fetching request \(error)")
+        }
+        
+        tableView.reloadData()
+    }
+    
+
+    
+}
+
+//MARK: - Search Bar Methods
+
+extension ToDoListViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        //         declare type and entity where request is being made
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        
+        //        specify the predicate - aka how the search will be performed and where the input is from - weird string is from obj-c
+        
+        //        academy.realm.io/posts/nspredicate-cheatsheet/ explains these
+        request.predicate = NSPredicate(format: "name CONTAINS[cd] %@", searchBar.text!)
+        
+        //        the sortDescriptor notes what property will be search for on the actual objects available and to sort closest = true
+        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        
+        loadItems(with: request)
+        
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+            
         }
     }
     

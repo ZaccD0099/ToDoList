@@ -7,5 +7,6 @@
 //
 
 struct K {
-    static let cellIdentifier = "ToDoListCell"
+    static let itemCellIdentifier = "ToDoListCell"
+    static let categoryCellIdentifier = "CategoryCell"
 }
