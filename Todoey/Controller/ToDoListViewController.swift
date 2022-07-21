@@ -5,6 +5,13 @@ class ToDoListViewController: UITableViewController {
     
     var itemArray = [Item]()
     
+    var selectedCategory : Category? {
+//        didSet occurs when property is set
+        didSet {
+            loadItems()
+        }
+    }
+    
 // UIApplication.shared.delegate as! AppDelegate refers to the appdelegate of the running instance of the app, cannot refer to the class because it hasn't been initialized - that is why AppDelegate.persistentContainer.viewContext doesn't work.
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
@@ -77,6 +84,7 @@ class ToDoListViewController: UITableViewController {
             
             newItem.name = textField.text!
             newItem.done = false
+            newItem.parent = self.selectedCategory
             
             self.itemArray.append(newItem)
             
@@ -109,7 +117,17 @@ class ToDoListViewController: UITableViewController {
     
 //    provides defualt Item.fetchRequest loading everything available
     
-    func loadItems(with request : NSFetchRequest<Item> = Item.fetchRequest()) {
+    func loadItems(with request : NSFetchRequest<Item> = Item.fetchRequest(), predicate : NSPredicate? = nil) {
+        
+        let categoryPredicate = NSPredicate(format: "parent.title MATCHES %@", selectedCategory!.title!)
+        
+// Combining predicates if they exist due to search bar usage, else just using the category predicate
+        
+        if let additionalPredicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+        } else {
+            request.predicate = categoryPredicate
+        }
         
 //        this requires a specific type as seen below you must declare the type. (READ)
 //        let request : NSFetchRequest<Item> = Item.fetchRequest()
@@ -139,12 +157,12 @@ extension ToDoListViewController: UISearchBarDelegate {
         //        specify the predicate - aka how the search will be performed and where the input is from - weird string is from obj-c
         
         //        academy.realm.io/posts/nspredicate-cheatsheet/ explains these
-        request.predicate = NSPredicate(format: "name CONTAINS[cd] %@", searchBar.text!)
+        let searchPredicate = NSPredicate(format: "name CONTAINS[cd] %@", searchBar.text!)
         
         //        the sortDescriptor notes what property will be search for on the actual objects available and to sort closest = true
         request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         
-        loadItems(with: request)
+        loadItems(with: request, predicate: searchPredicate)
         
     }
     
