@@ -3,12 +3,15 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9248DFA0288B274E0061E15A /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 9248DF9F288B274E0061E15A /* Realm */; };
+		9248DFA2288B274E0061E15A /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 9248DFA1288B274E0061E15A /* RealmSwift */; };
+		9248DFA6288B2BF30061E15A /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9248DFA5288B2BF30061E15A /* Item.swift */; };
+		9248DFA8288B2BFC0061E15A /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9248DFA7288B2BFC0061E15A /* Category.swift */; };
 		928674F928846DEB006476BE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 928674F828846DEB006476BE /* Constants.swift */; };
-		9286750428863CBB006476BE /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9286750228863CBB006476BE /* DataModel.xcdatamodeld */; };
 		92E159A72887879C00EAE06B /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E159A62887879C00EAE06B /* CategoryViewController.swift */; };
 		EB2BE4FA239524DB00FB933B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE4F9239524DB00FB933B /* AppDelegate.swift */; };
 		EB2BE4FE239524DB00FB933B /* ToDoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE4FD239524DB00FB933B /* ToDoListViewController.swift */; };
@@ -18,8 +21,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9248DFA5288B2BF30061E15A /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		9248DFA7288B2BFC0061E15A /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		928674F828846DEB006476BE /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		9286750328863CBB006476BE /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		92E159A62887879C00EAE06B /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		EB2BE4F6239524DB00FB933B /* Todoey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoey.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB2BE4F9239524DB00FB933B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -35,6 +39,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9248DFA2288B274E0061E15A /* RealmSwift in Frameworks */,
+				9248DFA0288B274E0061E15A /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,7 +50,8 @@
 		928674FA2885B3AE006476BE /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				9286750228863CBB006476BE /* DataModel.xcdatamodeld */,
+				9248DFA5288B2BF30061E15A /* Item.swift */,
+				9248DFA7288B2BFC0061E15A /* Category.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -121,6 +128,10 @@
 			dependencies = (
 			);
 			name = Todoey;
+			packageProductDependencies = (
+				9248DF9F288B274E0061E15A /* Realm */,
+				9248DFA1288B274E0061E15A /* RealmSwift */,
+			);
 			productName = Todoey;
 			productReference = EB2BE4F6239524DB00FB933B /* Todoey.app */;
 			productType = "com.apple.product-type.application";
@@ -149,6 +160,9 @@
 				Base,
 			);
 			mainGroup = EB2BE4ED239524DB00FB933B;
+			packageReferences = (
+				9248DF9E288B274E0061E15A /* XCRemoteSwiftPackageReference "realm-swift" */,
+			);
 			productRefGroup = EB2BE4F7239524DB00FB933B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -176,11 +190,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9286750428863CBB006476BE /* DataModel.xcdatamodeld in Sources */,
 				EB2BE4FE239524DB00FB933B /* ToDoListViewController.swift in Sources */,
 				EB2BE4FA239524DB00FB933B /* AppDelegate.swift in Sources */,
 				92E159A72887879C00EAE06B /* CategoryViewController.swift in Sources */,
+				9248DFA6288B2BF30061E15A /* Item.swift in Sources */,
 				928674F928846DEB006476BE /* Constants.swift in Sources */,
+				9248DFA8288B2BFC0061E15A /* Category.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -381,18 +396,29 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCVersionGroup section */
-		9286750228863CBB006476BE /* DataModel.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				9286750328863CBB006476BE /* DataModel.xcdatamodel */,
-			);
-			currentVersion = 9286750328863CBB006476BE /* DataModel.xcdatamodel */;
-			path = DataModel.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
+/* Begin XCRemoteSwiftPackageReference section */
+		9248DF9E288B274E0061E15A /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 10.28.2;
+			};
 		};
-/* End XCVersionGroup section */
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9248DF9F288B274E0061E15A /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9248DF9E288B274E0061E15A /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		9248DFA1288B274E0061E15A /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9248DF9E288B274E0061E15A /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EB2BE4EE239524DB00FB933B /* Project object */;
 }
