@@ -1,5 +1,6 @@
 import UIKit
 import RealmSwift
+import SwipeCellKit
 
 class ToDoListViewController: UITableViewController {
     
@@ -12,9 +13,6 @@ class ToDoListViewController: UITableViewController {
             loadItems()
         }
     }
-    
-    // UIApplication.shared.delegate as! AppDelegate refers to the appdelegate of the running instance of the app, cannot refer to the class because it hasn't been initialized - that is why AppDelegate.persistentContainer.viewContext doesn't work.
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,21 +33,7 @@ class ToDoListViewController: UITableViewController {
     
     //MARK: - Table View Datasource Methods
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: K.itemCellIdentifier, for: indexPath)
-        
-        // Configure the cell’s contents.
-        if let item = todoItems?[indexPath.row] {
-            cell.textLabel?.text = item.name
-            cell.accessoryType = item.done ? .checkmark : .none
-        }
-        else {
-            cell.textLabel?.text = "No Items Added"
-        }
-        
-        return cell
-    }
+
     
     //MARK: - Table View Delegate Method
     
@@ -140,5 +124,39 @@ extension ToDoListViewController: UISearchBarDelegate {
             }
             
         }
+    }
+}
+
+extension ToDoListViewController : SwipeTableViewCellDelegate {
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: K.itemCellIdentifier, for: indexPath) as! SwipeTableViewCell
+        
+        // Configure the cell’s contents.
+        if let item = todoItems?[indexPath.row] {
+            cell.textLabel?.text = item.name
+            cell.accessoryType = item.done ? .checkmark : .none
+        }
+        else {
+            cell.textLabel?.text = "No Items Added"
+        }
+        
+        cell.delegate = self
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
+        guard orientation == .right else { return nil }
+
+        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
+            // handle action by updating model with deletion
+        }
+
+        // customize the action appearance
+        deleteAction.image = UIImage(named: "delete")
+
+        return [deleteAction]
     }
 }
