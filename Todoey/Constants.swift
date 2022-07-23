@@ -8,5 +8,14 @@
 
 struct K {
     static let itemCellIdentifier = "ToDoListCell"
-    static let categoryCellIdentifier = "CategoryCell"
+    static let cellIdentifier = "Cell"
+    
+    struct iconNames {
+        static let moreIcon = "more_icon"
+        static let deleteIcon = "delete-icon"
+        static let flagIcon = "flag_icon"
+        static let readIcon = "read_icon"
+    }
 }
+
+

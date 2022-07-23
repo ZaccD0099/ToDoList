@@ -1,7 +1,7 @@
 import UIKit
 import RealmSwift
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
     
     let realm = try! Realm()
     var categories : Results<Category>?
@@ -15,6 +15,7 @@ class CategoryViewController: UITableViewController {
         appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
+    
         
         loadCategories()
     }
@@ -27,7 +28,8 @@ class CategoryViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: K.categoryCellIdentifier, for: indexPath)
+        
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         let categoryName = categories?[indexPath.row].title ?? "Add a category to get started..."
         
@@ -68,6 +70,19 @@ class CategoryViewController: UITableViewController {
         categories = realm.objects(Category.self)
         
         tableView.reloadData()
+    }
+    
+    override func deleteModel(at indexPath: IndexPath) {
+        if let currentCategory = categories?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(currentCategory)
+                }
+            }
+            catch {
+                print("error updating category \(error)")
+            }
+        }
     }
     
     //MARK: - Add New Categories
