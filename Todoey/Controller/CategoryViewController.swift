@@ -13,13 +13,15 @@ class CategoryViewController: SwipeTableViewController {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         appearance.backgroundColor = UIColor.systemBlue
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+//        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
     
         tableView.separatorStyle = .none
         loadCategories()
     }
+    
     
     // MARK: - Table view data source
     
@@ -36,7 +38,13 @@ class CategoryViewController: SwipeTableViewController {
             
             cell.textLabel?.text = currentCategory.title ?? "Add a category to get started..."
             
-            cell.backgroundColor = UIColor(hexString: currentCategory.hexColor ?? "1D9BF6")
+            if let cellBackgroundColor = UIColor(hexString: currentCategory.hexColor) {
+                
+                cell.backgroundColor = cellBackgroundColor
+                
+                cell.textLabel?.textColor = ContrastColorOf(cellBackgroundColor, returnFlat: true)
+                
+            }
         }
         
         return cell

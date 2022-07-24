@@ -29,19 +29,8 @@ class SwipeTableViewController: UITableViewController, SwipeTableViewCellDelegat
         }
         
         let editAction = SwipeAction(style: .default, title: "Edit") { action, indexPath in
-            
-            print("edit action triggered")
-//            if let currentItem = self.todoItems?[indexPath.row] {
-//                do {
-//                    try self.realm.write {
-//                        self.realm.delete(currentItem)
-//                    }
-//                } catch {
-//                    print("error occured deleting an item: \(error)")
-//                }
-//
-//                tableView.reloadData()
-//            }
+            self.editModel(at: indexPath)
+
         }
 
         // customize the action appearance
@@ -61,5 +50,9 @@ class SwipeTableViewController: UITableViewController, SwipeTableViewCellDelegat
     
     func deleteModel(at indexPath : IndexPath) {
 //        update cell, override
+    }
+    
+    func editModel(at indexPath : IndexPath) {
+//        code to override trigger form and edit
     }
 }

@@ -8,6 +8,8 @@ class ToDoListViewController: SwipeTableViewController {
     var todoItems : Results<Item>?
     let realm = try! Realm()
     
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     var selectedCategory : Category? {
         didSet {
             loadItems()
@@ -17,15 +19,48 @@ class ToDoListViewController: SwipeTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // setting naivgation bar color, using this because there is a bug in the GUI - only seen when running app
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithTransparentBackground()
-        appearance.backgroundColor = UIColor.systemBlue
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-        navigationItem.standardAppearance = appearance
-        navigationItem.scrollEdgeAppearance = appearance
-        
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        if let categoryHexColor = self.selectedCategory?.hexColor {
+            
+            title = selectedCategory!.title
+            
+            guard let navBar = navigationController?.navigationBar else {fatalError("navigation controller could not be set")}
+            
+            if let categoryColor = UIColor(hexString: categoryHexColor) {
+                navBar.tintColor = ContrastColorOf(categoryColor, returnFlat: true)
+                
+                searchBar.searchTextField.backgroundColor = FlatWhite()
+                
+                searchBar.barTintColor = categoryColor
+
+                navBar.scrollEdgeAppearance = customNavBarAppearance(categoryColor)
+            }
+        }
+    }
+    
+    @available(iOS 13.0, *)
+    func customNavBarAppearance(_ mainColor : UIColor) -> UINavigationBarAppearance {
+        
+        let customNavBarAppearance = UINavigationBarAppearance()
+        
+        let barButtonItemAppearance = UIBarButtonItemAppearance(style: .plain)
+            
+        customNavBarAppearance.backgroundColor = mainColor
+        
+        customNavBarAppearance.titleTextAttributes = [.foregroundColor: ContrastColorOf(mainColor, returnFlat: true)]
+        customNavBarAppearance.largeTitleTextAttributes = [.foregroundColor: ContrastColorOf(mainColor, returnFlat: true)]
+        
+        barButtonItemAppearance.normal.titleTextAttributes = [.foregroundColor: ContrastColorOf(mainColor, returnFlat: true)]
+
+        customNavBarAppearance.buttonAppearance = barButtonItemAppearance
+        customNavBarAppearance.backButtonAppearance = barButtonItemAppearance
+
+        return customNavBarAppearance
+            
+        }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return todoItems?.count ?? 1
@@ -56,12 +91,9 @@ class ToDoListViewController: SwipeTableViewController {
         return cell
     }
     
-
-    
     //MARK: - Table View Delegate Method
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         
         if let selectedItem = todoItems?[indexPath.row] {
             
@@ -82,7 +114,6 @@ class ToDoListViewController: SwipeTableViewController {
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         // What will happen when the user clicks on the action
-        
         var textField = UITextField()
         
         let alert = UIAlertController(title: "Add New Item", message: "", preferredStyle: .alert)
@@ -115,6 +146,7 @@ class ToDoListViewController: SwipeTableViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    
     //MARK: - Model Manipulation Methods
     
     func loadItems() {
@@ -134,7 +166,41 @@ class ToDoListViewController: SwipeTableViewController {
             }
         }
     }
-
+    
+    override func editModel(at indexPath: IndexPath) {
+        
+        var textField = UITextField()
+        
+        let selectedItem = self.todoItems?[indexPath.row]
+        
+        let alert = UIAlertController(title: "Edit Item", message: "", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Submit", style: .default) { action in
+            
+            if let currentItem = selectedItem {
+                do {
+                    try self.realm.write {
+                        currentItem.name = textField.text ?? ""
+                    }
+                }
+                catch {
+                    print("error in alert editting block \(error)")
+                }
+            }
+            
+            self.tableView.reloadData()
+            
+        }
+        
+        alert.addTextField { alertTextField in
+            alertTextField.text = selectedItem?.name
+            textField = alertTextField
+        }
+        
+        alert.addAction(action)
+        
+        present(alert, animated: false, completion: nil)
+    }
 }
 
 
